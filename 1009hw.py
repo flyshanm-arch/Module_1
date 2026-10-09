@@ -1,0 +1,7 @@
+print("Hello! My name is Shanmukha!")
+input ("What is your name?")
+print("What an intresting name!")
+input("What is your birthday?")
+print("Cool!")
+input("How old are you?")
+print("That is cool! Thanks for chatting with me!")
