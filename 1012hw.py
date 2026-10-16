@@ -1,0 +1,6 @@
+print("Hi! I am Shanmukha!")
+print("What is your name?")
+input(__name__)
+print("Nice name! So, when were you born?") 
+input("age")
+print("Nice meeting you!")
