@@ -1,0 +1,178 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stick Figure World</title>
+
+  <style>
+    body {
+      margin: 0;
+      background: #111827;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 24px 0 8px;
+    }
+
+    p {
+      color: #cbd5e1;
+    }
+
+    canvas {
+      display: block;
+      width: min(900px, 95vw);
+      height: auto;
+      margin: 20px auto;
+      background: white;
+      border: 3px solid #475569;
+      border-radius: 10px;
+    }
+
+    button {
+      padding: 12px 22px;
+      margin: 5px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Stick Figure World</h1>
+  <p>Watch your character walk. Press SPACE to jump!</p>
+
+  <canvas id="world" width="900" height="450"></canvas>
+
+  <button id="pauseButton">Pause</button>
+  <button id="resetButton">Reset</button>
+
+  <script>
+    const canvas = document.getElementById("world");
+    const ctx = canvas.getContext("2d");
+
+    let x = 120;
+    let jump = 0;
+    let jumpVelocity = 0;
+    let frame = 0;
+    let paused = false;
+
+    function line(x1, y1, x2, y2) {
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+    }
+
+    function drawStickFigure() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Ground
+      ctx.strokeStyle = "#94a3b8";
+      ctx.lineWidth = 3;
+      line(0, 370, 900, 370);
+
+      // Character position
+      const groundY = 350 - jump;
+      const swing = Math.sin(frame * 0.15) * 22;
+
+      ctx.strokeStyle = "#111827";
+      ctx.lineWidth = 7;
+      ctx.lineCap = "round";
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(x, groundY - 95, 20, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Body
+      line(x, groundY - 75, x, groundY - 25);
+
+      // Arms
+      line(x, groundY - 65,
+           x - 28 - swing, groundY - 45);
+
+      line(x, groundY - 65,
+           x + 28 + swing, groundY - 45);
+
+      // Legs
+      line(x, groundY - 25,
+           x - 20 + swing, groundY + 5);
+
+      line(x, groundY - 25,
+           x + 20 - swing, groundY + 5);
+
+      // Eyes
+      ctx.fillStyle = "#111827";
+      ctx.beginPath();
+      ctx.arc(x - 7, groundY - 100, 2.5, 0, Math.PI * 2);
+      ctx.arc(x + 7, groundY - 100, 2.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    function animate() {
+      if (!paused) {
+        frame++;
+        x += 2;
+
+        if (x > 850) {
+          x = 40;
+        }
+
+        // Jump physics
+        jump += jumpVelocity;
+        jumpVelocity -= 0.7;
+
+        if (jump < 0) {
+          jump = 0;
+          jumpVelocity = 0;
+        }
+
+        drawStickFigure();
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    document.addEventListener("keydown", function(event) {
+      if (event.code === "Space") {
+        event.preventDefault();
+
+        if (jump === 0) {
+          jumpVelocity = 13;
+        }
+      }
+    });
+
+    document.getElementById("pauseButton")
+      .addEventListener("click", function() {
+        paused = !paused;
+        this.textContent = paused ? "Resume" : "Pause";
+      });
+
+    document.getElementById("resetButton")
+      .addEventListener("click", function() {
+        x = 120;
+        jump = 0;
+        jumpVelocity = 0;
+        frame = 0;
+        drawStickFigure();
+      });
+
+    drawStickFigure();
+    animate();
+  </script>
+</body>
+</html>
